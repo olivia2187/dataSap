@@ -1,0 +1,74 @@
+import React from "react";
+import {Form} from "antd";
+import {api} from "@/services/services";
+import TableCharts from "@/components/TableList/TableCharst";
+import SearchNode from "@/components/dashboard/search/searchNode";
+import {getParam, getDefaultQuery} from "@/pages/patent/dashboard/detail";
+
+const Index = ({location}) => {
+
+    const param = getParam(location);
+    const defaultQuery = getDefaultQuery(param);
+
+    const renderSimpleForm = (form, handleSearch, handleReset) => {
+        let defaultData = [
+            {type: 'shujulx', key: '1', value: '数据类型:申请量', closable: true}
+        ];
+        defaultData = [...defaultData, ...param.defaultValue];
+        const disable = {hangye: {...param.disable.hangye, 2: []}};
+        return <SearchNode form={form} handleReset={handleReset}
+                           handleSearch={handleSearch}
+                           disable={{...param.disable, ...disable}}
+                           defaultSearch={defaultData}
+                           showSearch={['shujulx', 'diqu', 'nianfen', 'hangye']}/>
+    };
+
+
+    // 列表需要显示的字段
+    const columns = [
+        {
+            title: '产业名称',
+            dataIndex: 'desc',
+        },
+        // {
+        //     title: '代码',
+        //     dataIndex: 'code',
+        // },
+        {
+            title: '发明专利',
+            dataIndex: 'fmCount',
+        },
+        {
+            title: '实用新型',
+            dataIndex: 'syCount',
+        },
+        {
+            title: '总数量',
+            dataIndex: 'totalCount',
+        },
+    ];
+    // charts x y 轴
+    const axis = {
+        x: 'desc',// x 显示的 key
+        y: [
+            {key: "fmCount", name: "发明专利"},
+            {key: "syCount", name: "实用新型"},
+        ]
+    };
+    return (
+        <TableCharts
+            rowKey="code"
+            type={"bar"}
+            search={renderSimpleForm}
+            api={api.patent.industry}
+            axis={axis}
+            height={400}
+            nodeName="list"
+            columns={columns}
+            params={defaultQuery}
+        />
+    );
+};
+
+export default Form.create()(Index);
+
